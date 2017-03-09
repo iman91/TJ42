@@ -2,7 +2,6 @@
 
 digit [0-9]
 letter [a-zA-Z]
-float [0-9]+\.[0-9]+
 
 %%
 /* Identifiers/Comments/Whitespace by Shih-Kai Lu */

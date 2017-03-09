@@ -1,7 +1,6 @@
 %namespace GPLexTutorial
 
 digit [0-9]
-letter [a-zA-Z]
 float [0-9]+\.[0-9]+
 
 %%

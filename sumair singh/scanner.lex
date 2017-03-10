@@ -14,18 +14,7 @@ bool                         { return (int)Tokens.BOOL; }
 null    { yylval.name = yytext; return (int)Tokens.nullliteral; }
 '.*'                     { yylval.name = yytext; return (int)Tokens.characterliteral; }
 
-{letter}({letter}|{digit})* { yylval.name = yytext; return (int)Tokens.IDENT; }
 
-{digit}+	    { yylval.num = int.Parse(yytext); return (int)Tokens.NUMBER; }
-
-"="                          { return '='; }
-"+"                          { return '+'; }
-"<"                          { return '<'; }
-"("                          { return '('; }
-")"                          { return ')'; }
-"{"                          { return '{'; }
-"}"                          { return '}'; }
-";"                          { return ';'; }
 
 [ \r\n\t]                    /* skip whitespace */
 

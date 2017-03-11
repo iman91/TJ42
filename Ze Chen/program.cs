@@ -2,19 +2,17 @@ using System;
 
 namespace GPLexTutorial
 {
-    public struct MyValueType
-    {
-        public int num;
-        public float flo;
-    };
-
-    public enum Tokens
+     public enum Tokens
     {
         INTERGER,
         FLOAT,
         EOF
     };
-
+    public struct MyValueType
+    {
+        public int num;
+        public float flo;
+    };
     public abstract class ScanBase
     {
         public MyValueType yylval;

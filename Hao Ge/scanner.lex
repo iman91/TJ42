@@ -54,6 +54,6 @@
 "@"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
 "::"						 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
 
-[ \r\n\t]						/* ingore the white space */ 
+[ \r\n\t]						/* ingore the white space */  
 
 %%

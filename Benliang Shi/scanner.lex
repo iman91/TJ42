@@ -1,5 +1,10 @@
 %namespace GPLexTutorial
 
+LF   [\n]
+CR   [\r]
+CR LF [\t]
+
+
 %%
 /* Benliang Shi, Student number 9623001*/
 

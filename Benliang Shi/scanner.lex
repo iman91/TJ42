@@ -3,8 +3,9 @@
 %%
 /* Benliang Shi, Student number 9623001*/
 
-LF                           { return (int)Tokens.LF; }
-CR                           { return (int)Tokens.CR; }
+LF                           { return LF; }
+CR                           { return CR; }
+CR LF                        { return CR LF; }
 abstract                     { return (int)Tokens.ABSTRACT; }
 assert                       { return (int)Tokens.ASSERT; }
 if                           { return (int)Tokens.IF; }

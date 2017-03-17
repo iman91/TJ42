@@ -8,7 +8,7 @@ namespace GPLexTutorial
 {
     public enum Tokens
     {
-        stringliteral = 300,
+        StringLiteral = 300,
         BooleanLiteral = 256,
         EOF = 264
     };
@@ -41,9 +41,8 @@ namespace GPLexTutorial
                 token = (Tokens)scanner.yylex();
                 switch (token)
                 {
-                    case Tokens.stringliteral:
-                       // scanner.yylval.name = scanner.yylval.name.Replace("\\","");              
-                        Console.WriteLine("stringliteral ({0})", scanner.yylval.name);
+                    case Tokens.StringLiteral:         
+                        Console.WriteLine("StringLiteral ({0})", scanner.yylval.name);
                         break;
                     case Tokens.BooleanLiteral:
                         Console.WriteLine("BooleanLiteral ({0})", scanner.yylval.name);

@@ -1,15 +1,25 @@
 %namespace GPLexTutorial
+InputCharacter [^\\"]
+OctalDigit [0-7]
+ZeroToThree [0-3]
+OctalEscape {OctalDigit}|{OctalDigit}{OctalDigit}|{ZeroToThree}{OctalDigit}{OctalDigit}
+EscapeSequence \\([btnfr\"'\\]|{OctalEscape})
+StringCharacter {InputCharacter}|{EscapeSequence}
 
-escapecharacter [b, t, n, f, r, ", ', \\, 0, 1, 2, 3, 4, 5, 6,7]
 
 %%
+
 true|false		{yylval.name = yytext; return (int)Tokens.BooleanLiteral;}
-\"((\\{escapecharacter})|[^\\"])*\"	{yylval.name = yytext.Replace("\\\"","\""); return (int)Tokens.stringliteral; }
+
+\"{StringCharacter}*\"	{yylval.name = yytext; return (int)Tokens.StringLiteral; }
+
+
+
 [ \r\n\t]                    /* skip whitespace */
 
 .                            { 
                                  throw new Exception(
                                      String.Format(
                                          "unexpected character '{0}'", yytext)); 
-                             }0
+                             }
 %%

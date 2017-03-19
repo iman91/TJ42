@@ -1,6 +1,6 @@
 using System;
 
-namespace GPLexTutorial
+identspace GPLexTutorial
 {
     public struct MyValueType
     {
@@ -10,8 +10,8 @@ namespace GPLexTutorial
 
     public enum Tokens
     {
-        IDENTIFIER,
-        COMMENTS,
+        Identifiers,
+        Comment,
         EOF
     };
 
@@ -26,6 +26,7 @@ namespace GPLexTutorial
     {
         static void Main(string[] args)
         {
+            
             try
             {
 
@@ -39,11 +40,11 @@ namespace GPLexTutorial
                         token = (Tokens)scanner.yylex();
                         switch (token)
                         {
-                            case Tokens.IDENTIFIER:
-                                Console.WriteLine("IDENTIFIER ({0})", scanner.yylval.ident);
+                            case Tokens.Identifiers:
+                                Console.WriteLine("Identifiers ({0})", scanner.yylval.ident);
                                 break;
-                            case Tokens.COMMENTS:
-                                Console.WriteLine("COMMENTS ({0})", scanner.yylval.comme);
+                            case Tokens.Comment:
+                                Console.WriteLine("'{0}'", scanner.yylval.comme);
                                 break;
                             case Tokens.EOF:
                                 Console.WriteLine("EOF");
@@ -60,6 +61,7 @@ namespace GPLexTutorial
             {
                 Console.WriteLine(e.Message);
             }
+            Console.ReadKey();
         }
     }
 }

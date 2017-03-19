@@ -1,59 +1,13 @@
 %namespace GPLexTutorial
 
+Operator						(=|>|<|!|~|?|:|->|==|>=|<=|!=|&&||\||++|--|+|-|*|/|&|||^|%|<<|>>|>>>|+=|-=|*=|/=|&=||=|^=|%=|<<=|>>=|>>>=)
+Separator						(\(|\)|\{|\}|\[|\]|;|,|\.|\.\.\.|@|::)
+
 %%
+
 /* Operators & Separators by Hao Ge */
-"="							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"<"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"!"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"~"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"?"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-":"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"->"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"=="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"<="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"!="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"&&"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"||"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"++"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"--"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"+"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"-"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"*"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"/"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"&"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"|"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"^"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"%"							 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"<<"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">>"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">>>"						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"+="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"-="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"*="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"/="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"&="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"|="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"^="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"%="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-"<<="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">>="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
-">>>="						 { yylval.oper = yytext; return (int)Tokens.OPERATORS; }
+{Operator}							{ yylval.oper = yytext; return (int)Tokens.Operators; }
+{Separator}							{ yylval.separ = yytext; return (int)Tokens.Separators; }
 
-"("							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-")"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"{"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"}"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"["							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"]"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-";"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-","							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"."							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"..."						 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"@"							 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-"::"						 { yylval.separ = yytext; return (int)Tokens.SEPARATORS; }
-
-[ \r\n\t]						/* ingore the white space */  
-
+.									{}
 %%

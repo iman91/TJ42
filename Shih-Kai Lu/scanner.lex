@@ -1,15 +1,16 @@
 %namespace GPLexTutorial
 
-digit [0-9]
-letter [a-zA-Z]
+Identifier						    [a-zA-Z_][a-zA-Z0-9_]*
+WhiteSpace					    	[ \s]
+TraditionalComment				(\/\*|\*\/)
+EndOfLineComment					\/\/
 
 %%
 /* Identifiers/Comments/Whitespace by Shih-Kai Lu */
-{letter}({letter}|{digit})*  { yylval.ident = yytext; return (int)Tokens.IDENTIFIER; }
-"/*"						 { yylval.comme = yytext; return (int)Tokens.COMMENTS;}
-"*/"						 { yylval.comme = yytext; return (int)Tokens.COMMENTS;}
-"//"						 { yylval.comme = yytext; return (int)Tokens.COMMENTS;}
+{Identifier}					  	{ yylval.ident = yytext; return (int)Tokens.Identifiers; }
+{TraditionalComment}			{ yylval.comme = yytext; return (int)Tokens.Comment;}
+{EndOfLineComment}				{ yylval.comme = yytext; return (int)Tokens.Comment;}
+{WhiteSpace}					  	{} 
 
-[ \r\n\t]						/* ingore the white space */ 
-
+.									        {}
 %%

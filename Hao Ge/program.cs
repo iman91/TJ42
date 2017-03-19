@@ -10,8 +10,8 @@ namespace GPLexTutorial
 
     public enum Tokens
     {
-        OPERATORS,
-        SEPARATORS,
+        Operators,
+        Separators,
         EOF
     };
 
@@ -26,6 +26,7 @@ namespace GPLexTutorial
     {
         static void Main(string[] args)
         {
+            
             try
             {
 
@@ -39,11 +40,11 @@ namespace GPLexTutorial
                         token = (Tokens)scanner.yylex();
                         switch (token)
                         {
-                            case Tokens.OPERATORS:
-                                Console.WriteLine("OPERATORS ({0})", scanner.yylval.oper);
+                            case Tokens.Operators:
+                                Console.WriteLine("'{0}'", scanner.yylval.oper);
                                 break;
-                            case Tokens.SEPARATORS:
-                                Console.WriteLine("SEPARATORS ({0})", scanner.yylval.separ);
+                            case Tokens.Separators:
+                                Console.WriteLine("'{0}'", scanner.yylval.separ);
                                 break;
                             case Tokens.EOF:
                                 Console.WriteLine("EOF");
@@ -60,6 +61,7 @@ namespace GPLexTutorial
             {
                 Console.WriteLine(e.Message);
             }
+            Console.ReadKey();
         }
     }
 }

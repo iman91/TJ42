@@ -4,10 +4,12 @@
 {
     public int num;
     public string name;
+    public float flo;
 }
 
 %token <name> Identifier
-%token public protected private abstract static final synchronized native strictfp void
+%token PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
+%token <flo> FloatingPointLiteral
 
 %%
 
@@ -17,15 +19,15 @@ MethodDeclaration
 
 MethodModifiers
 		: /*fixme*/
-		| public 
-		| protected
-		| private
-		| abstract
-		| static
-		| final
-		| synchronized
-		| native
-		| strictfp
+		|PUBLIC 
+		|PROTECTED 
+		|PRIVATE 
+		|ABSTRACT 
+		|STATIC 
+		|FINAL 
+		|SYNCHRONIZED 
+		|NATIVE 
+		|STRICFFP
 		;
 
 MethodHeader
@@ -35,7 +37,7 @@ MethodHeader
 
 Result
 		: /*fixme*/ 
-		| void
+		| VOID
 		;
 
 MethodDeclarator

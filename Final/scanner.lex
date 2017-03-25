@@ -40,7 +40,7 @@ void					             	   { return (int)Tokens.VOID; }
 
 ({DecimalNumeral}|{HexNumeral}|{OctalNumeral}|{BinaryNumeral})						{ yylval.num = int.Parse(yytext); return (int)Tokens.IntergerLiteral;}
 
-({DecimalFloatingPointNumeral}|{HexdecimalFloatingPointNumeral}}      		{ yylval.flo = float.Parse(yytext); return (int)Tokens.FloatingPointLiteral;}
+({DecimalFloatingPointNumeral}|{HexdecimalFloatingPointNumeral})      		{ yylval.flo = float.Parse(yytext); return (int)Tokens.FloatingPointLiteral;}
 
 true|false		                { yylval.name = yytext; return (int)Tokens.BooleanLiteral;}
 \"{StringCharacter}*\"	      { yylval.name = yytext; return (int)Tokens.StringLiteral; }

@@ -54,5 +54,10 @@
 "=="						           		{ return (int)Tokens.EQ_OP; }
 "!="						          		{ return (int)Tokens.NE_OP; }
 
-.									            {}
+
+.                             { 
+                                 throw new Exception(
+                                     String.Format(
+                                         "unexpected character '{0}'", yytext)); 
+                              }
 %%

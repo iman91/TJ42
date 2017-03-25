@@ -10,13 +10,13 @@ HexdecimalFloatingPointNumeral			0[xX][0-9a-fA-F]*\.?[0-9a-fA-F]*([pP][+-]?[0-9]
 %%
 
 /* Literals(Integer, FloatingPoint) by Ze Chen */
-{DecimalNumeral}					{ yylval.num = yytext; return (int)Tokens.IntergerLiteral; }
-{HexNumeral}						{ yylval.num = yytext; return (int)Tokens.IntergerLiteral; }
-{OctalNumeral}						{ yylval.num = yytext; return (int)Tokens.IntergerLiteral; }
-{BinaryNumeral}						{ yylval.num = yytext; return (int)Tokens.IntergerLiteral; }
+({DecimalNumeral}|{HexNumeral}|{OctalNumeral}|{BinaryNumeral})						{ yylval.num = int.Parse(yytext); return (int)Tokens.IntergerLiteral;}
 
-{DecimalFloatingPointNumeral}+		{ yylval.flo = yytext; return (int)Tokens.FloatingPointLiteral;}
-{HexdecimalFloatingPointNumeral}	{ yylval.flo = yytext; return (int)Tokens.FloatingPointLiteral;}
+({DecimalFloatingPointNumeral}|{HexdecimalFloatingPointNumeral})      		{ yylval.flo = float.Parse(yytext); return (int)Tokens.FloatingPointLiteral;}
 
-.									{}
+.                             { 
+                                 throw new Exception(
+                                     String.Format(
+                                         "unexpected character '{0}'", yytext)); 
+                              }
 %%

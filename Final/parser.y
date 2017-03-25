@@ -3,11 +3,18 @@
 {
     public int num;
     public string name;
+    public string flo;
+    
 }
 
 %token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
 %token <name> StringLiteral BooleanLiteral Identifier 
 %token <num> IntergerLiteral
+%token <flo> FloatingPointLiteral
+%token IF ELSE BOOL EQ_OP GE_OP LE_OP OR_OP AND_OP PTR_OP NE_OP 
+%token DOUBLECOLON UNSIGNRIGHT ELLIPSIS RIGHT_ASSIGN LEFT_ASSIGN ADD_ASSIGN SUB_ASSIGN 
+%token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN 
+%token RIGHT_OP LEFT_OP INC_OP DEC_OP
 
 
 

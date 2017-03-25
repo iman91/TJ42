@@ -7,7 +7,7 @@
 }
 
 %token <name> Identifier
-%token public protected private abstract static final synchronized native strictfp
+%token PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
 
 %%
 
@@ -41,13 +41,15 @@ NormalClassDeclaration
 
 ClassModifiers
 		: /*fixme*/ 
-		| public 
-		| protected 
-		| private 
-		| abstract 
-		| static 
-		| final 
-		| strictfp
+		|PUBLIC 
+		|PROTECTED 
+		|PRIVATE 
+		|ABSTRACT 
+		|STATIC 
+		|FINAL 
+		|SYNCHRONIZED 
+		|NATIVE 
+		|STRICFFP
 		;
 
 TypeParameters_opt

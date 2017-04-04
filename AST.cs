@@ -23,8 +23,9 @@ namespace AST
             Indent(indent);
             Console.WriteLine("{");
 
-            foreach (var field in GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
-                                                                           System.Reflection.BindingFlags.Instance))
+            var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).ToArray();
+
+            foreach (var field in GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance))
             {
                 object value = field.GetValue(this);
                 Indent(indent + 1);
@@ -33,10 +34,10 @@ namespace AST
                     Console.WriteLine("{0}:", field.Name);
                     ((Node)value).DumpValue(indent + 2);
                 }
-                if (value is IEnumerable && !(value is String))
+                else if (value is IEnumerable && !(value is String))
                 {
                     var e = (IEnumerable)value;
-                    Console.WriteLine("[");
+                    Console.WriteLine("{0}: [", field.Name);
                     foreach (var item in e)
                     {
                         if (item is Node)
@@ -51,8 +52,8 @@ namespace AST
                     Console.WriteLine("]");
                 }
                 else
-                    Console.WriteLine("{0}: {1}", field.Name, value);
-                
+                    Console.WriteLine("{0}:{1}", field.Name, value);
+
             }
 
             Indent(indent);
@@ -75,7 +76,7 @@ namespace AST
         { this.classmodifier = classmodifier; this.NameOfClass = NameOfClass; this.methoddeclaration = methoddeclaration; }
     }
     public enum MethodModifier { Static, Public, }
-    public abstract class Type: Node
+    public abstract class Type : Node
     {
     }
     public class ArrayType : Type
@@ -86,13 +87,13 @@ namespace AST
     public class NamedType : Type
     {
         private string TypeName;
-        public NamedType (string TypeName) { this.TypeName = TypeName; }
+        public NamedType(string TypeName) { this.TypeName = TypeName; }
     }
     public class FormalParameter : Node
     {
         private Type TypeOfFP;
         private string NameOfFP;
-      
+
         public FormalParameter(Type TypeOfFP, string NameOfFP) { this.NameOfFP = NameOfFP; this.TypeOfFP = TypeOfFP; }
 
     }
@@ -111,20 +112,23 @@ namespace AST
             this.formalparameters = formalparameters; this.statement = statement;
         }
     }
+    public class NumericType : Type
+    {
+        //pr
+    }
     public class LocalVariableDeclaration : Statement
     {
-        private string TypeOfLVD;
+        private Type TypeOfLVD;
         private string NameOfLVD;
-        public LocalVariableDeclaration(string TypeOfLVD, string NameOfLVD)
+        public LocalVariableDeclaration(Type TypeOfLVD, string NameOfLVD)
         { this.TypeOfLVD = TypeOfLVD; this.NameOfLVD = NameOfLVD; }
     }
     public abstract class ExpressionStatement : Statement { };
     public abstract class Expression : Node { };
     public class AssignmentExpression : ExpressionStatement
     {
-        private string ExpressionName;
         private int AssignmentOperator;
-        private Expression expression;
+        private Expression lhs, rhs;
         public AssignmentExpression(string ExpressionName, int AssignmentOperator, Expression expression)
         { this.ExpressionName = ExpressionName; this.AssignmentOperator = AssignmentOperator; this.expression = expression; }
     }
@@ -140,7 +144,7 @@ namespace AST
         {
             var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},
                 "HelloWorld",new List<MethodDeclaration> {new MethodDeclaration( new List<MethodModifier> { MethodModifier.Public, MethodModifier.Static }, "void", "main",
-                new List<FormalParameter> {new FormalParameter(new Type(Element.StringArray),"args") }, new List<Statement> {new LocalVariableDeclaration("int","x"),
+                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statement> {new LocalVariableDeclaration("int","x"),
                     new AssignmentExpression("x",2, new PrimaryExpression(42))})})});
             program.DumpValue(1);
         }

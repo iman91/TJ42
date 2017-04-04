@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace AST
 {
@@ -32,8 +33,26 @@ namespace AST
                     Console.WriteLine("{0}:", field.Name);
                     ((Node)value).DumpValue(indent + 2);
                 }
+                if (value is IEnumerable && !(value is String))
+                {
+                    var e = (IEnumerable)value;
+                    Console.WriteLine("[");
+                    foreach (var item in e)
+                    {
+                        if (item is Node)
+                            ((Node)item).DumpValue(indent + 2);
+                        else
+                        {
+                            Indent(indent + 2);
+                            Console.WriteLine(item);
+                        }
+                    }
+                    Indent(indent + 1);
+                    Console.WriteLine("]");
+                }
                 else
                     Console.WriteLine("{0}: {1}", field.Name, value);
+                
             }
 
             Indent(indent);
@@ -56,15 +75,29 @@ namespace AST
         { this.classmodifier = classmodifier; this.NameOfClass = NameOfClass; this.methoddeclaration = methoddeclaration; }
     }
     public enum MethodModifier { Static, Public, }
-    public class FormalParameter
+    public abstract class Type: Node
     {
+    }
+    public class ArrayType : Type
+    {
+        private Type ElementType;
+        public ArrayType(Type ElementType) { this.ElementType = ElementType; }
+    }
+    public class NamedType : Type
+    {
+        private string TypeName;
+        public NamedType (string TypeName) { this.TypeName = TypeName; }
+    }
+    public class FormalParameter : Node
+    {
+        private Type TypeOfFP;
         private string NameOfFP;
-        private string TypeOfFP;
-        public FormalParameter(string TypeOfFP, string NameOfFP) { this.NameOfFP = NameOfFP; this.TypeOfFP = TypeOfFP; }
+      
+        public FormalParameter(Type TypeOfFP, string NameOfFP) { this.NameOfFP = NameOfFP; this.TypeOfFP = TypeOfFP; }
 
     }
     public abstract class Statement : Node { };
-    public class MethodDeclaration
+    public class MethodDeclaration : Node
     {
         private List<MethodModifier> methodmodifer;
         private string TypeOfMethod;
@@ -105,10 +138,10 @@ namespace AST
     {
         static void Main()
         {
-            var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},          
+            var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},
                 "HelloWorld",new List<MethodDeclaration> {new MethodDeclaration( new List<MethodModifier> { MethodModifier.Public, MethodModifier.Static }, "void", "main",
-                new List<FormalParameter> {new FormalParameter("string","args") }, new List<Statement> {new LocalVariableDeclaration("int","x"),
-                    new AssignmentExpression("x",2, new PrimaryExpression(42))}) })});
+                new List<FormalParameter> {new FormalParameter(new Type(Element.StringArray),"args") }, new List<Statement> {new LocalVariableDeclaration("int","x"),
+                    new AssignmentExpression("x",2, new PrimaryExpression(42))})})});
             program.DumpValue(1);
         }
     }

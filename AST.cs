@@ -97,16 +97,16 @@ namespace AST
         public FormalParameter(Type TypeOfFP, string NameOfFP) { this.NameOfFP = NameOfFP; this.TypeOfFP = TypeOfFP; }
 
     }
-    public abstract class Statement : Node { };
+    public abstract class Statements : Node { };
     public class MethodDeclaration : Node
     {
         private List<MethodModifier> methodmodifer;
         private string TypeOfMethod;
         private string NameOfMethod;
         private List<FormalParameter> formalparameters;
-        private List<Statement> statement;
+        private List<Statements> statement;
         public MethodDeclaration(List<MethodModifier> methodmodifer, string TypeOfMethod, string NameOfMethod,
-            List<FormalParameter> formalparameters, List<Statement> statement)
+            List<FormalParameter> formalparameters, List<Statements> statement)
         {
             this.methodmodifer = methodmodifer; this.TypeOfMethod = TypeOfMethod; this.NameOfMethod = NameOfMethod;
             this.formalparameters = formalparameters; this.statement = statement;
@@ -114,23 +114,23 @@ namespace AST
     }
     public class NumericType : Type
     {
-        //pr
+        private     
     }
-    public class LocalVariableDeclaration : Statement
+    public class LocalVariableDeclaration : Statements
     {
         private Type TypeOfLVD;
         private string NameOfLVD;
         public LocalVariableDeclaration(Type TypeOfLVD, string NameOfLVD)
         { this.TypeOfLVD = TypeOfLVD; this.NameOfLVD = NameOfLVD; }
     }
-    public abstract class ExpressionStatement : Statement { };
+    public abstract class ExpressionStatement : Statements { };
     public abstract class Expression : Node { };
     public class AssignmentExpression : ExpressionStatement
     {
         private int AssignmentOperator;
         private Expression lhs, rhs;
-        public AssignmentExpression(string ExpressionName, int AssignmentOperator, Expression expression)
-        { this.ExpressionName = ExpressionName; this.AssignmentOperator = AssignmentOperator; this.expression = expression; }
+        public AssignmentExpression(Expression lhs, int AssignmentOperator,, Expression rhs)
+        { this.AssignmentOperator = AssignmentOperator; this.lhs = lhs; this.rhs = rhs; }
     }
     public class PrimaryExpression : Expression
     {
@@ -144,8 +144,8 @@ namespace AST
         {
             var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},
                 "HelloWorld",new List<MethodDeclaration> {new MethodDeclaration( new List<MethodModifier> { MethodModifier.Public, MethodModifier.Static }, "void", "main",
-                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statement> {new LocalVariableDeclaration("int","x"),
-                    new AssignmentExpression("x",2, new PrimaryExpression(42))})})});
+                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statements> {new LocalVariableDeclaration(,"x"),
+                    new AssignmentExpression( ,'+', new PrimaryExpression(42))})})});
             program.DumpValue(1);
         }
     }

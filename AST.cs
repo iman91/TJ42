@@ -89,6 +89,11 @@ namespace AST
         private string TypeName;
         public NamedType(string TypeName) { this.TypeName = TypeName; }
     }
+    public class NumericType : Type
+    {
+        private Type ElementType;
+        public NumericType(Type ElementType) { this.ElementType = ElementType; }
+    }
     public class FormalParameter : Node
     {
         private Type TypeOfFP;
@@ -112,10 +117,7 @@ namespace AST
             this.formalparameters = formalparameters; this.statement = statement;
         }
     }
-    public class NumericType : Type
-    {
-        private     
-    }
+
     public class LocalVariableDeclaration : Statements
     {
         private Type TypeOfLVD;
@@ -129,13 +131,18 @@ namespace AST
     {
         private int AssignmentOperator;
         private Expression lhs, rhs;
-        public AssignmentExpression(Expression lhs, int AssignmentOperator,, Expression rhs)
+        public AssignmentExpression(Expression lhs, int AssignmentOperator, Expression rhs)
         { this.AssignmentOperator = AssignmentOperator; this.lhs = lhs; this.rhs = rhs; }
     }
     public class PrimaryExpression : Expression
     {
         private int ValueOfPE;
         public PrimaryExpression(int ValueOfPE) { this.ValueOfPE = ValueOfPE; }
+    }
+    public class ExpressionName : Expression
+    {
+        private string Identifier;
+        public ExpressionName(string Identifier) { this.Identifier = Identifier; }
     }
 
     public class program
@@ -144,8 +151,8 @@ namespace AST
         {
             var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},
                 "HelloWorld",new List<MethodDeclaration> {new MethodDeclaration( new List<MethodModifier> { MethodModifier.Public, MethodModifier.Static }, "void", "main",
-                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statements> {new LocalVariableDeclaration(,"x"),
-                    new AssignmentExpression( ,'+', new PrimaryExpression(42))})})});
+                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statements> {new LocalVariableDeclaration(new NumericType(new NamedType("int")),"x"),
+                    new AssignmentExpression( new ExpressionName("x"),'+', new PrimaryExpression(42))})})});
             program.DumpValue(1);
         }
     }

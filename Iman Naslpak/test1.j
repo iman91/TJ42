@@ -1,3 +1,12 @@
-true 
-false
-"etes sdx\"c782364(?*!@^#*&!@\\\1234 \b"	
+public private class Helloworld {  
+	public static void main (string [] args) 
+	{
+	int x;
+	x = 42;
+	 switch () 
+		{
+			case gasdg: x =42;
+			default : int x ;
+		}
+ 	}
+}

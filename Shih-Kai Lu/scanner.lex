@@ -33,8 +33,7 @@ native                         { return (int)Tokens.NATIVE; }
 strictfp                       { return (int)Tokens.STRICFFP; }
 class                          { return (int)Tokens.CLASS; }
 void					             	   { return (int)Tokens.VOID; }
-
-while										       { return (int)Tokens.WHILE; } //new token
+while							{return (int)Tokens.WHILE; } //New token
 
 ({DecimalNumeral}|{HexNumeral}|{OctalNumeral}|{BinaryNumeral})						{ yylval.num = int.Parse(yytext); return (int)Tokens.IntergerLiteral;}
 

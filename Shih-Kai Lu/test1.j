@@ -1,3 +1,7 @@
-/* this comment /* // /** ends here: */
-
-String    i3    apetn     MAX_VALUE    isLetterOrDigit
+public private class Helloworld {  
+	public static void main (string [] args) 
+	{
+	 int x ;
+	 x= 42;
+	}
+}

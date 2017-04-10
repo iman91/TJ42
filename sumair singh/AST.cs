@@ -60,31 +60,32 @@ namespace AST
             Console.WriteLine("}");
         }
     };
-    public class IfStatement : Statement
+    public class IfStatement : Statements
     {
         private Expression cond;
-        private Statement thenStmt, elseStmt;
+        private Statements thenStmt, elseStmt;
 
-        public IfStatement(Expression cond, Statement thenStmt, Statement elseStmt)
+        public IfStatement(Expression cond, Statements thenStmt, Statements elseStmt)
         {
             this.cond = cond;
             this.thenStmt = thenStmt;
             this.elseStmt = elseStmt;
         }
     }
-    public interface Statement { };
-    public class IfThenElseStatement : Statement
+    
+    public class IfThenElseStatement : Statements
     {
         private Expression cond;
-        private Statement thenStmt, elseStmt;
+        private Statements thenStmt, elseStmt;
 
-        public IfThenElseStatement(Expression cond, Statement thenStmt, Statement elseStmt)
+        public IfThenElseStatement(Expression cond, Statements thenStmt, Statements elseStmt)
         {
             this.cond = cond;
             this.thenStmt = thenStmt;
             this.elseStmt = elseStmt;
         }
     }
+    
     public class CompilationUnit : Node
     {
         private List<TypeDeclaration> typedeclaration;

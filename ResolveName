@@ -7,7 +7,10 @@ using System.Collections;
 
 namespace AST
 {
+    interface Declaration
+    {
 
+    }
     public abstract class Node
     {
         public abstract bool ResolveNames();
@@ -71,19 +74,30 @@ namespace AST
         {
             foreach (TypeDeclaration typedeclaration in typedeclarations)
             {
-                return typedeclaration.ResolveNames();
+                if (!typedeclaration.ResolveNames())
+                    return false;
             }
+            return true;
         }
     }
-    public abstract class TypeDeclaration : Node { };
+    public abstract class TypeDeclaration : Node,Declaration { };
     public enum ClassModifier { Static, Public, }
     public class ClassDeclaration : TypeDeclaration
     {
         private List<ClassModifier> classmodifier;
         private string NameOfClass;
-        private List<MethodDeclaration> methoddeclaration;
+        private List<MethodDeclaration> methoddeclarations;
         public ClassDeclaration(List<ClassModifier> classmodifier, string NameOfClass, List<MethodDeclaration> methoddeclaration)
-        { this.classmodifier = classmodifier; this.NameOfClass = NameOfClass; this.methoddeclaration = methoddeclaration; }
+        { this.classmodifier = classmodifier; this.NameOfClass = NameOfClass; this.methoddeclarations = methoddeclarations; }
+        public override bool ResolveNames()
+        {
+            foreach (MethodDeclaration methoddeclaration in methoddeclarations)
+            {
+                if (! methoddeclaration.ResolveNames())
+                return false;
+            }
+            return true;
+        }
     }
     public enum MethodModifier { Static, Public, }
     public abstract class Type : Node
@@ -93,47 +107,67 @@ namespace AST
     {
         private Type ElementType;
         public ArrayType(Type ElementType) { this.ElementType = ElementType; }
-    }
+        public override bool ResolveNames()
+        {
+            return true;
+        }
+      }
     public class NamedType : Type
     {
         private string TypeName;
         public NamedType(string TypeName) { this.TypeName = TypeName; }
+        public override bool ResolveNames()
+        {
+            return true;
+        }
     }
-    public class NumericType : Type
-    {
-        private Type ElementType;
-        public NumericType(Type ElementType) { this.ElementType = ElementType; }
-    }
+
     public class FormalParameter : Node
     {
         private Type TypeOfFP;
         private string NameOfFP;
 
         public FormalParameter(Type TypeOfFP, string NameOfFP) { this.NameOfFP = NameOfFP; this.TypeOfFP = TypeOfFP; }
-
+        public override bool ResolveNames()
+        {
+            return TypeOfFP.ResolveNames();
+        }
     }
     public abstract class Statements : Node { };
-    public class MethodDeclaration : Node
+    public class MethodDeclaration : Node,Declaration
     {
         private List<MethodModifier> methodmodifer;
         private string TypeOfMethod;
         private string NameOfMethod;
         private List<FormalParameter> formalparameters;
-        private List<Statements> statement;
+        private List<Statements> statements;
         public MethodDeclaration(List<MethodModifier> methodmodifer, string TypeOfMethod, string NameOfMethod,
-            List<FormalParameter> formalparameters, List<Statements> statement)
+            List<FormalParameter> formalparameters, List<Statements> statements)
         {
             this.methodmodifer = methodmodifer; this.TypeOfMethod = TypeOfMethod; this.NameOfMethod = NameOfMethod;
-            this.formalparameters = formalparameters; this.statement = statement;
+            this.formalparameters = formalparameters; this.statements = statements;
+        }
+        public override bool ResolveNames()
+        {
+            foreach (Statements statement in statements)
+            {
+                if (!statement.ResolveNames())
+                    return false;
+            }
+            return true;
         }
     }
 
-    public class LocalVariableDeclaration : Statements
+    public class LocalVariableDeclaration : Statements,Declaration
     {
         private Type TypeOfLVD;
         private string NameOfLVD;
         public LocalVariableDeclaration(Type TypeOfLVD, string NameOfLVD)
         { this.TypeOfLVD = TypeOfLVD; this.NameOfLVD = NameOfLVD; }
+        public override bool ResolveNames()
+        {
+            return TypeOfLVD.ResolveNames();
+        }
     }
     public abstract class ExpressionStatement : Statements { };
     public abstract class Expression : Node { };
@@ -143,16 +177,36 @@ namespace AST
         private Expression lhs, rhs;
         public AssignmentExpression(Expression lhs, int AssignmentOperator, Expression rhs)
         { this.AssignmentOperator = AssignmentOperator; this.lhs = lhs; this.rhs = rhs; }
+        public override bool ResolveNames()
+        {
+            return lhs.ResolveNames() && rhs.ResolveNames();
+        }
     }
     public class PrimaryExpression : Expression
     {
         private int ValueOfPE;
         public PrimaryExpression(int ValueOfPE) { this.ValueOfPE = ValueOfPE; }
+        public override bool ResolveNames()
+        {
+            return true;
+        }
     }
+
     public class ExpressionName : Expression
     {
         private string Identifier;
+        private Declaration declaration;
         public ExpressionName(string Identifier) { this.Identifier = Identifier; }
+        public override bool ResolveNames(LexicalScope scope)
+        {
+            if (scope != NULL)
+                declaration = scope.Resolve(name);
+
+            if (declaration == NULL)
+                Console.WriteLine(stderr, "Error: Undeclared identifier %s\n", name.c_str());
+
+            return declaration != NULL;
+        }
     }
 
     public class program
@@ -161,7 +215,7 @@ namespace AST
         {
             var program = new CompilationUnit(new List<TypeDeclaration> { new ClassDeclaration(new List<ClassModifier> {ClassModifier.Public},
                 "HelloWorld",new List<MethodDeclaration> {new MethodDeclaration( new List<MethodModifier> { MethodModifier.Public, MethodModifier.Static }, "void", "main",
-                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statements> {new LocalVariableDeclaration(new NumericType(new NamedType("int")),"x"),
+                new List<FormalParameter> {new FormalParameter(new ArrayType(new NamedType("String Array")),"args") }, new List<Statements> {new LocalVariableDeclaration(new NamedType("int")),"x"),
                     new AssignmentExpression( new ExpressionName("x"),'+', new PrimaryExpression(42))})})});
             program.DumpValue(1);
         }

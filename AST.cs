@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
+
 
 namespace GPLexTutorial.AST
 {
-    class ast
+    class AST
     {
         interface Declaration
         {
@@ -14,7 +16,7 @@ namespace GPLexTutorial.AST
         }
         public abstract class Node
         {
-            public abstract void TypeCheck ();
+            public abstract void TypeCheck();
             public abstract bool ResolveNames();
             void Indent(int n)
             {
@@ -119,6 +121,7 @@ namespace GPLexTutorial.AST
         public enum MethodModifier { Static, Public, }
         public abstract class Type : Node
         {
+
         }
         public class ArrayType : Type
         {
@@ -141,7 +144,10 @@ namespace GPLexTutorial.AST
             {
                 return true;
             }
-
+            public override void TypeCheck()
+            {
+           
+            }
         }
 
         public class FormalParameter : Node
@@ -153,6 +159,10 @@ namespace GPLexTutorial.AST
             public override bool ResolveNames()
             {
                 return TypeOfFP.ResolveNames();
+            }
+            public override void TypeCheck()
+            {
+                TypeOfFP.TypeCheck();
             }
         }
         public abstract class Statements : Node { };
@@ -178,6 +188,13 @@ namespace GPLexTutorial.AST
                 }
                 return true;
             }
+            public override void TypeCheck()
+            {
+                foreach (Statements statement in statements)
+                {
+                    statement.TypeCheck();
+                }
+            }
         }
 
         public class LocalVariableDeclaration : Statements, Declaration
@@ -190,9 +207,13 @@ namespace GPLexTutorial.AST
             {
                 return TypeOfLVD.ResolveNames();
             }
+            public override void TypeCheck()
+            {
+                 TypeOfLVD.TypeCheck();
+            }
         }
         public abstract class ExpressionStatement : Statements { };
-        public abstract class Expression : Node { };
+        public abstract class Expression : Node { public Type type; };
         public class AssignmentExpression : ExpressionStatement
         {
             private int AssignmentOperator;
@@ -203,6 +224,15 @@ namespace GPLexTutorial.AST
             {
                 return lhs.ResolveNames() && rhs.ResolveNames();
             }
+            public override void TypeCheck()
+            {
+                lhs.TypeCheck();
+                rhs.TypeCheck();
+                if (!rhs.type.Compatible(lhs.type))
+                {
+                    Console.WriteLine("type error in assignment/n");
+                }
+            }
         }
         public class PrimaryExpression : Expression
         {
@@ -211,6 +241,10 @@ namespace GPLexTutorial.AST
             public override bool ResolveNames()
             {
                 return true;
+            }
+            public override void TypeCheck()
+            {
+                type = new IntType();
             }
         }
 
@@ -229,7 +263,12 @@ namespace GPLexTutorial.AST
 
                 return declaration != NULL;
             }
+            public override void TypeCheck()
+            {
+                type = declaration.GetType();
+            }
         }
 
     }
-}
+    }
+

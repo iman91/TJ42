@@ -1,22 +1,4 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @sumair9823964
- Sign out
- Watch 0
-  Star 0
-  Fork 2 iman91/TJ42
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Pulse  Graphs
-Branch: master Find file Copy pathTJ42/Iman Naslpak/parser.y
-bab2dab  2 days ago
-@iman91 iman91 Add files via upload
-1 contributor
-RawBlameHistory     
-454 lines (393 sloc)  6.7 KB
-%namespace GPLexTutorial
+﻿%namespace GPLexTutorial
 %union
 {
     public int num;
@@ -380,52 +362,52 @@ EqualityExpression
 
 		/* sumair singh */
 RelationalExpression: 
-                ShiftExpression
+                ShiftExpression               {$$=$1;}
 				 | /* fixme */
 				 ;
 
 ShiftExpression:
-              AdditiveExpression
+              AdditiveExpression               {$$=$1;}
 			   | /* fixme */
 			   ;
 
 AdditiveExpression:
-                 MultiplicativeExpression
+                 MultiplicativeExpression             {$$=$1;}
 				  | /* fixme */
 				  ;
 
 MultiplicativeExpression:
-                 UnaryExpression
+                 UnaryExpression                    {$$=$1;}
 				  | /* fixme */
 				  ;
 
 UnaryExpression:
-                UnaryExpressionNotPlusMinus
+                UnaryExpressionNotPlusMinus             {$$=$1;}
 				 | /* fixme */
 				 ;
 
 UnaryExpressionNotPlusMinus:
-                 PostFixExpression
+                 PostFixExpression               {$$=$1;}
 				  | /* fixme */
 				  ;
 
 PostFixExpression:
-                Primary
+                Primary                         {$$=$1;}
 				 | /* fixme */
 				 ;
 
 Primary:
-       PrimaryNoNewArray
+       PrimaryNoNewArray                      {$$=$1;}
 		| /* fixme */
 		;
 
 PrimaryNoNewArray:
-               Literal
+               Literal                       {$$=$1;}
 				| /* fixme */
 				;
 
 Literal:
-       IntegerLiteral
+       IntegerLiteral                      {$$=$1;}
 		| /* fixme */
 		;
 

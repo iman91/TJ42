@@ -1,335 +1,294 @@
 %namespace GPLexTutorial
+
+%{
+//public static AST.Statement root;
+%}
+
 %union
 {
     public int num;
     public string name;
-    
+	public AST.List<FormalParameters> FPs；
+	public AST.FormalParameter FP；
+	public AST.ArrayType AT；
+	public AST.NamedType NT；
 }
 
-%token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
-%token DO
-%token <name> StringLiteral BooleanLiteral Identifier 
 %token <num> IntergerLiteral
+%token <name> StringLiteral BooleanLiteral Identifier
+%token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
 
+%type <FPs> FormalParameters
+%type <FP> FormalParameter
+%type <AT> ArrayType
+%type <NT> NamedType
 
-
+%left '='
+%nonassoc '<'
+%left '+'
 
 %%
-/* Shih-Kai Lu */
+Node
+		: CompilationUnit	
+		;
+
+/* ShihKai Lu */
 CompilationUnit
-		: PackageDeclaration_opt ImportDeclarations TypeDeclarations
+		: PackageDeclaration_opt ImportDeclarations TypeDeclarations	
 		;
 
 PackageDeclaration_opt
 		: /*fixme*/
-		| PackageDeclaration
-		;
-
-PackageDeclaration:
-		/* fixme */
 		;
 
 ImportDeclarations
 		: /*fixme*/
-		| /*empty*/
 		;
 
 TypeDeclarations
-		:  /* empty */
-		| TypeDeclarations TypeDeclaration
-		; 
-TypeDeclaration:
-	ClassDeclaration
-	| InterfaceDeclaration
-	;
-
-InterfaceDeclaration:
-		/*fixme*/
+		: TypeDeclaration	
 		;
+
+TypeDeclaration
+		: ClassDeclaration	
+		| /*fixme*/
+		; 
+
 ClassDeclaration
 		: NormalClassDeclaration 
-		| EnumDeclaration
+		| /*fixme*/ 
 		;
 
-EnumDeclaration:
-	/* fixme */
-	;
-
 NormalClassDeclaration
-		: ClassModifiers CLASS Identifier TypeParameters_opt Superclass_opt Superinterfaces_opt ClassBody
+		: ClassModifiers CLASS Identifier TypeParameters_opt Superclass_opt Superinterfaces_opt ClassBody 
 		;
 
 ClassModifiers
-		: /* empty */ 
-		| ClassModifier ClassModifiers
+		: ClassModifier 
 		;
-ClassModifier:
-		PUBLIC 
-		|PROTECTED 
-		|PRIVATE 
-		|ABSTRACT 
-		|STATIC 
-		|FINAL 
-		|SYNCHRONIZED 
-		|NATIVE 
-		|STRICFFP
+
+ClassModifier
+		: PUBLIC	
+		| /*fixme*/
 		;
+
 TypeParameters_opt
 		: /*fixme*/
-		| /*empty*/
 		;
 
 Superclass_opt
 		: /*fixme*/
-		| /*empty*/
 		;
 
 Superinterfaces_opt
 		: /*fixme*/
-		| /*empty*/
 		;
 
 ClassBody
-		: '{' ClassBodyDeclarations '}'
+		: '{' ClassBodyDeclarations '}' 
 		;
 
 ClassBodyDeclarations
-		: ClassBodyDeclaration
-		| /* empty */
+		: ClassBodyDeclaration	
 		;
-ClassBodyDeclaration:
-		ClassMemberDeclaration
-		| /* fixme */ 
+
+ClassBodyDeclaration
+		: ClassMemberDeclaration 
+		| /*fixme*/
 		;
 
 ClassMemberDeclaration
-		: 
-		 MethodDeclaration
+		: MethodDeclaration	
 		| /*fixme*/
 		;
 
-
-		/* Ze Chen */
+/* Ze Chen */
 MethodDeclaration
-		: MethodModifiers MethodHeader MethodBody
+		: MethodModifiers MethodHeader MethodBody 
 		;
-MethodModifiers:
-	/* empty */
-	| MethodModifier	MethodModifiers
-	;
+		
+MethodModifiers
+		: MethodModifier	
+		;
+
 MethodModifier
-		: PUBLIC 
-		|PROTECTED 
-		|PRIVATE 
-		|ABSTRACT 
-		|STATIC 
-		|FINAL 
-		|SYNCHRONIZED 
-		|NATIVE 
-		|STRICFFP
+		: PUBLIC	
+		| STATIC	
 		;
+
 MethodHeader
-		: Result MethodDeclarator Throws_opt
-		| /*fixme*/
+		: Result MethodDeclarator Throws_opt	
 		;
-Throws_opt:
-	/* empty */
-	| Throws
-	;
-Throws: 
-	/* fixme */
-	;
+
 Result
-		: /*fixme*/ 
-		| VOID
+		: VOID	
+		| /*fixme*/
 		;
 
 MethodDeclarator
-		: Identifier '(' FormalParameterList_opt ')' Dims_opt
+		: Identifier '(' FormalParameterList_opt ')' Dims_opt	
 		;
-Dims_opt:
-		/* empty */
-		| Dims
-		;
-Dims: 
-	'[' ']'
-	|/* fixme */ 
-	;
+		
 FormalParameterList_opt
-		: /* empty */
-		| FormalParameterList
-		;
-FormalParameterList:
-		LastFormalParameter
-		| /* fixme */
+		: LastFormalParameter	
+		| /*fixme*/
 		;
 
-		/* Hao Ge */
+/* Hao Ge*/
 LastFormalParameter
-		: /*fixme*/ 
-		| FormalParameter
+		: FormalParameter	{ $$= $1; }
+		| /*fixme*/
 		;
 
 FormalParameter
-		: VariableModifiers UnannType VariableDeclaratorId
+		: VariableModifiers UnannType VariableDeclaratorId { $$ = new AST.FormalParameter($2,$3); }
 		;
 
 VariableModifiers
-		: /* empty */
-		| VariableModifier
+		: VariableModifier
 		;
-VariableModifier:
-	/* fixme */
-	;
+
+VariableModifier
+		: /*fixme*/ 
+		;
+
 UnannType
-		: /*fixme*/
-		| UnannReferenceType
+		: UnannPrimitiveType { $$ = new AST.ArrayType($1); }
+		| UnannReferenceType { $$ = $1; }
+		; 
+
+UnannPrimitiveType
+		: NumericType	{ $$ = $1; }
+		| /*fixme*/
+		; 
+
+NumericType
+		: IntegralType	{ $$ = $1; }
+		| /*fixme*/
+		;
+		 
+
+IntegralType
+		: INT	{ $$ = $1; }
 		;
 
 UnannReferenceType
-		: /*fixme*/
+		: UnannArrayType { $$ = new AST.ArrayType($1); }
 		| /*fixme*/
-		| UnannArrayType
 		;
 
 UnannArrayType
-		: /*fixme*/
+		: UnannTypeVariable Dims	{ $$ = new AST.NamedType($1); }
 		| /*fixme*/
-		| UnannTypeVariable Dims
 		;
 
 UnannTypeVariable
-		: Identifier
+		: Identifier	{ $$ = $1; }
+
+Dims
+		: Annotations '[' ']' '{'Annotations '[' ']''}' { $$ = $2,$3; }
+		; 
+
+Annotations
+		: Annotation
 		;
 
+Annotation
+		: /*fixme*/
+		;
 
 VariableDeclaratorId
-		: Identifier Dims_opt
+		: Identifier Dims_opt	{ $$ = $1; }
+		;
+		 
+Dims_opt
+		: Dims
 		;
 
 /* Mir Iman Naslpak */
-MethodBody:
-	Block
-	;
-Block:
-	'{' BlockStatements_opt '}'
-	| /* empty */
-	;
-BlockStatements_opt:
-	BlockStatements
-	| /* empty */
-	;
-BlockStatements:
-	BlockStatement 
-	| BlockStatements BlockStatement
-	;
-BlockStatement:
-	LocalVariableDeclarationStatement
-	| Statement
-	| /* fixme */
-	;
+MethodBody
+		: Block
+		;
+		
+Block
+		: '{' BlockStatements_opt '}'
+		;
 
-LocalVariableDeclarationStatement:
-	LocalVariableDeclaration ';'
-	;
-LocalVariableDeclaration:
-	VariableModifiers UnannType VariableDeclaratorList
-	;
-VariableModifiers:
-	/* empty */
-	| /* fixme */
-	;
-UnannType:
-	UnannPrimitiveType
-	| /* fixme */
-	;
-UnannPrimitiveType:
-	NumericType
-	| /* fixme */
-	;
-NumericType:
-	IntegralType
-	| /* fixme */
-	;
-IntegralType:
-	 BYTE
-	| SHORT
-	| INT
-	| LONG
-	| CHAR
-	;
-VariableDeclaratorList:
-	VariableDeclarators
-	;
-VariableDeclarators:
-	VariableDeclarator
-	| VariableDeclarator ',' VariableDeclarators
-	;
-VariableDeclarator:
-	VariableDeclaratorId equal_opt
-	;
-equal_opt:
-	'=' VariableInitializer
-	| /* empty */
-	;
-VariableInitializer:
-	/* fixme */
-	;
+BlockStatements_opt
+		: BlockStatement BlockStatements
+		;
+		
+BlockStatement
+		: LocalVariableDeclarationStatement
+		| ClassDeclaration 
+		| Statement
+		;
 
-	/* Benliang Shi */
-Statement:
-	StatementWithoutTrailingSubstatement
-	| WhileStatement
-	| /* fixme */
-	;
+LocalVariableDeclarationStatement
+		: LocalVariableDeclaration 
+		; 
 
-StatementWithoutTrailingSubstatement:
-	ExpressionStatement
-	| DoStatement
-	| BreakStatement
-	| ContinueStatement
-	| ReturnStatement
-	| /* fixme */
-	;
+LocalVariableDeclaration
+		: VariableModifiers UnannType VariableDeclaratorList
+		;
+		
+VariableDeclaratorList
+		: VariableDeclarator '{'',' VariableDeclarator'}'
+		;
+		
+VariableDeclarator
+		: VariableDeclaratorId '[''=' VariableInitializer']'
+		;
+		
+VariableInitializer
+		: /*fixme*/
+		;
 
-ExpressionStatement:
-	StatementExpression ';'
-	;
+/* Benliang Shi */
+Statement
+		: StatementWithoutTrailingSubstatement
+		| /*fixme*/
+		;
 
-StatementExpression:
-	Assignment
-	| /* fixme */
-	;
+StatementWithoutTrailingSubstatement
+		: ExpressionStatement
+		| /*fixme*/
+		;
 
-Assignment:
-	LeftHandSide AssignmentOperator Expression
-	| /* fixme */
-	;
+ExpressionStatement
+		: StatementExpression ';'
+		;
+		
+StatementExpression
+		: Assignment
+		| /*fixme*/
+		;
 
-LeftHandSide:
-	ExpressionName
-	| /* fixme */
-	;
+Assignment
+		: LeftHandSide AssignmentOperator Expression
+		;
 
-ExpressionName:
-	Identifier
-	| /* fixme */
-	;
+LeftHandSide
+		: ExpressionName
+		| /*fixme*/
+		;
 
-AssignmentOperator:
-	'='
-	| /* fixme */
-	;
+ExpressionName
+		: Identifier
+		;
 
-	/* Yihao Wu */
+AssignmentOperator
+		: '='
+		;
+
+/* Yihao Wu */
 Expression
 		: AssignmentExpression
-                | /*fixme*/
+		| /*fixme*/
 		;
 
 AssignmentExpression
 		: ConditionalExpression
-		| /*fixme*/
 		;
 
 ConditionalExpression
@@ -340,8 +299,8 @@ ConditionalExpression
 ConditionalOrExpression
 		: ConditionalAndExpression
 		| /*fixme*/
-		; 
-		
+		;
+
 ConditionalAndExpression
 		: InclusiveOrExpression
 		| /*fixme*/
@@ -356,6 +315,7 @@ ExclusiveOrExpression
 		: AndExpression
 		| /*fixme*/
 		;
+
 AndExpression
 		: EqualityExpression
 		| /*fixme*/
@@ -366,64 +326,62 @@ EqualityExpression
 		| /*fixme*/
 		;
 
-		/* sumair singh */
-RelationalExpression: 
-                ShiftExpression
-				 | /* fixme */
-				 ;
-
-ShiftExpression:
-              AdditiveExpression
-			   | /* fixme */
-			   ;
-
-AdditiveExpression:
-                 MultiplicativeExpression
-				  | /* fixme */
-				  ;
-
-MultiplicativeExpression:
-                 UnaryExpression
-				  | /* fixme */
-				  ;
-
-UnaryExpression:
-                UnaryExpressionNotPlusMinus
-				 | /* fixme */
-				 ;
-
-UnaryExpressionNotPlusMinus:
-                 PostFixExpression
-				  | /* fixme */
-				  ;
-
-PostFixExpression:
-                Primary
-				 | /* fixme */
-				 ;
-
-Primary:
-       PrimaryNoNewArray
-		| /* fixme */
+RelationalExpression
+		: ShiftExpression
+		| /*fixme*/
 		;
 
-PrimaryNoNewArray:
-               Literal
-				| /* fixme */
-				;
-
-Literal:
-       IntergerLiteral
-		| /* fixme */
+ShiftExpression
+		: AdditiveExpression
+		| /*fixme*/
 		;
 
-		/* Hao Ge - Do Statement */
-DoStatement
-		: DO Statement WHILE '(' Expression ')'
+AdditiveExpression
+		: MultiplicativeExpression
+		| /*fixme*/
 		;
 
+MultiplicativeExpression
+		: UnaryExpression
+		| /*fixme*/
+		;
+
+UnaryExpression
+		: UnaryExpressionNotPlusMinus 
+		| /*fixme*/
+		;
+
+UnaryExpressionNotPlusMinus
+		: PostfixExpression
+		| /*fixme*/
+		;
+
+PostfixExpression
+		: Primary
+		| /*fixme*/
+		;
+
+Primary
+		: PrimaryNoNewArray
+		| /*fixme*/
+		;
+
+PrimaryNoNewArray
+		: Literal
+		| /*fixme*/
+		;
+
+Literal
+		: IntegerLiteral
+		| /*fixme*/
+		;
 
 %%
+
+int yywrap()
+{
+    return 1;
+}
 
 public Parser(Scanner scanner) : base(scanner)
 {

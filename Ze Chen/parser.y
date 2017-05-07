@@ -183,6 +183,7 @@ UnannArrayType
 
 UnannTypeVariable
 		: Identifier	
+		;
 
 Dims
 		: Annotations '[' ']' '{'Annotations '[' ']''}' 

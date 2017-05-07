@@ -8,10 +8,10 @@
 {
     public int num;
     public string name;
-	public AST.List<FormalParameters> FPs；
-	public AST.FormalParameter FP；
-	public AST.ArrayType AT；
-	public AST.NamedType NT；
+	public AST.List<FormalParameters> FPs;
+	public AST.FormalParameter FP;
+	public AST.ArrayType AT;
+	public AST.NamedType NT;
 }
 
 %token <num> IntergerLiteral
@@ -184,6 +184,7 @@ UnannArrayType
 
 UnannTypeVariable
 		: Identifier	{ $$ = $1; }
+		;
 
 Dims
 		: Annotations '[' ']' '{'Annotations '[' ']''}' { $$ = $2,$3; }

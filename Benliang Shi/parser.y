@@ -277,44 +277,42 @@ VariableInitializer:
 	;
 
 	/* Benliang Shi */
-Statement:
-	StatementWithoutTrailingSubstatement
-	| /* fixme */
-	;
+Statement
+		: StatementWithoutTrailingSubstatement	{ $$ = new List<AST.Statements>($1); }
+		| /*fixme*/
+		;
 
-StatementWithoutTrailingSubstatement:
-	ExpressionStatement
-	| /* fixme */
-	;
+StatementWithoutTrailingSubstatement
+		: ExpressionStatement	{ $$ = $1; }
+		| /*fixme*/
+		;
 
-ExpressionStatement:
-	StatementExpression ';'
-	;
+ExpressionStatement
+		: StatementExpression ';'	{ $$ = $1; }
+		;
+		
+StatementExpression
+		: Assignment	{ $$ = $1; }
+		| /*fixme*/
+		;
 
-StatementExpression:
-	Assignment
-	| /* fixme */
-	;
+Assignment
+		: LeftHandSide AssignmentOperator Expression	{ $$ = new AST.Assignment($1, $2, $3); }
+		;
 
-Assignment:
-	LeftHandSide AssignmentOperator Expression
-	| /* fixme */
-	;
+LeftHandSide
+		: ExpressionName { $$ = $1; }
+		| /*fixme*/
+		;
 
-LeftHandSide:
-	ExpressionName
-	| /* fixme */
-	;
+ExpressionName
+		: Identifier	{ $$ = new AST.ExpressionName($1); }
+		;
 
-ExpressionName:
-	Identifier
-	| /* fixme */
-	;
+AssignmentOperator
+		: '='	{ $$ = $1; }
+		;
 
-AssignmentOperator:
-	'='
-	| /* fixme */
-	;
 
 	/* Yihao Wu */
 Expression

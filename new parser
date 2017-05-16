@@ -1,0 +1,389 @@
+%namespace GPlex
+
+
+%union
+{
+    public int num;
+    public string name;
+	public AST.CompilationUnit CU;
+	public List<AST.TypeDeclaration> TDs;
+}
+
+%token <num> IntegerLiteral
+%token <name> StringLiteral BooleanLiteral Identifier
+%token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
+
+%type <CU> CompilationUnit
+%type <TDs> TypeDeclarations
+
+%left '='
+%nonassoc '<'
+%left '+'
+
+%%
+
+/* ShihKai Lu */
+CompilationUnit
+		: PackageDeclaration_opt ImportDeclarations TypeDeclarations	{ $$ = new AST.CompilationUnit($3); }
+		;
+
+PackageDeclaration_opt
+		: /*fixme*/
+		;
+
+ImportDeclarations
+		: /*fixme*/
+		;
+
+TypeDeclarations
+		: TypeDeclaration	{ $$ = $1; }
+		;
+
+TypeDeclaration
+		: ClassDeclaration	{ $$ = $1; }
+		| /*fixme*/
+		; 
+
+ClassDeclaration
+		: NormalClassDeclaration { $$ = $1; }
+		| /*fixme*/ 
+		;
+
+NormalClassDeclaration
+		: ClassModifiers CLASS Identifier TypeParameters_opt Superclass_opt Superinterfaces_opt ClassBody	{ $$= new AST.ClassDeclaration($1,$3,$7); }
+		;
+
+ClassModifiers
+		: ClassModifier {$$=$1;}
+		;
+
+ClassModifier
+		: PUBLIC	{$$=$1;}
+		| /*fixme*/
+		;
+
+TypeParameters_opt
+		: /*fixme*/
+		;
+
+Superclass_opt
+		: /*fixme*/
+		;
+
+Superinterfaces_opt
+		: /*fixme*/
+		;
+
+ClassBody
+		: '{' ClassBodyDeclarations '}' { $$ = $2; }
+		;
+
+ClassBodyDeclarations
+		: ClassBodyDeclaration	{$$=$1;}
+		;
+
+ClassBodyDeclaration
+		: ClassMemberDeclaration { $$=$1;}
+		| /*fixme*/
+		;
+
+ClassMemberDeclaration
+		: MethodDeclaration	{$$=$1;}
+		| /*fixme*/
+		;
+
+/* Ze Chen */
+MethodDeclaration
+		: MethodModifiers MethodHeader MethodBody {$$=new AST.MethodDeclaration($1,$2,$3);}
+		;
+		
+MethodModifiers
+		: MethodModifier	{$$=$1;}
+		;
+
+MethodModifier
+		: PUBLIC	
+		| STATIC	
+		;
+
+MethodHeader
+		: Result MethodDeclarator Throws_opt	{$$=new AST.MethodHeader($1,$2);}
+		;
+
+Result
+		: VOID	{$$=$1;}
+		| /*fixme*/
+		;
+
+MethodDeclarator
+		: Identifier '(' FormalParameterList_opt ')' Dims_opt	{$$=new AST.MethodDeclarator($1,$3);}
+		;
+		
+FormalParameterList_opt
+		: LastFormalParameter	{$$=$1;}
+		| /*fixme*/
+		;
+
+/* Hao Ge*/
+LastFormalParameter
+		: FormalParameter	{$$=$1;}
+		| /*fixme*/
+		;
+
+FormalParameter
+		: VariableModifiers UnannType VariableDeclaratorId	{$$=new AST.FormalParameter($2,$3);}
+		;
+
+VariableModifiers
+		: VariableModifier	
+		;
+
+VariableModifier
+		: /*fixme*/ 
+		;
+
+UnannType
+		: UnannPrimitiveType	{$$=$1;}
+		| UnannReferenceType	{$$=$1;}
+		; 
+
+UnannPrimitiveType
+		: NumericType	{$$=$1;}
+		| /*fixme*/
+		; 
+
+NumericType
+		: IntegralType	{$$=$1;}
+		| /*fixme*/
+		;
+		 
+
+IntegralType
+		: INT	{$$=$1;}
+		;
+
+UnannReferenceType
+		: UnannArrayType	{$$=$1;}
+		| /*fixme*/
+		;
+
+UnannArrayType
+		: UnannTypeVariable Dims	{$$=new AST.ArrayType($1);}
+		| /*fixme*/
+		;
+
+UnannTypeVariable
+		: Identifier	{$$=$1;}
+		;
+
+Dims
+		: Annotations '[' ']' '{'Annotations '[' ']' '}' 
+		; 
+
+Annotations
+		: Annotation
+		;
+
+Annotation
+		: /*fixme*/
+		;
+
+VariableDeclaratorId
+		: Identifier Dims_opt	{$$=new AST.NamedType($1);}
+		;
+		
+Dims_opt
+		: Dims
+		;
+
+Throws_opt
+		: /*fixme*/
+		;
+
+/* Mir Iman Naslpak */
+MethodBody
+		: Block	{$$=$1;}
+		;
+		
+Block
+		: '{' BlockStatements_opt '}'	{$$=$2;}
+		;
+
+BlockStatements_opt
+		: BlockStatement BlockStatements {$$ = $1; $$.Add($2);}
+		;
+		
+BlockStatement
+		: LocalVariableDeclarationStatement {$$=$1;}
+		| ClassDeclaration 
+		| Statement
+		;
+
+LocalVariableDeclarationStatement
+		: LocalVariableDeclaration	';' {$$=$1;}
+		; 
+
+LocalVariableDeclaration
+		: VariableModifiers UnannType VariableDeclaratorList {$$=new AST.LocalVariableDeclaration($2,$3);}
+		;
+		
+VariableDeclaratorList
+		: VariableDeclarator ',' VariableDeclarators	{$$=$1;}
+		;
+
+VariableDeclarators
+		: VariableDeclarator
+		;		
+
+VariableDeclarator
+		: VariableDeclaratorId '=' VariableInitializer_opt	{$$=$1;}
+		;
+		
+VariableInitializer_opt
+		: /*fixme*/
+		;
+
+BlockStatements
+		: BlockStatement	{$$=$1;}
+		;
+/* Benliang Shi */
+Statement
+		: StatementWithoutTrailingSubstatement	{$$=$1;}
+		| /*fixme*/
+		;
+
+StatementWithoutTrailingSubstatement
+		: ExpressionStatement	{$$=$1;}
+		| /*fixme*/
+		;
+
+ExpressionStatement
+		: StatementExpression ';'	{$$=$1;}
+		;
+		
+StatementExpression
+		: Assignment	{$$=$1;}
+		| /*fixme*/
+		;
+
+Assignment
+		: LeftHandSide AssignmentOperator Expression	{$$=new AST.Statements($1,$2,$3);}
+		;
+
+LeftHandSide
+		: ExpressionName	{$$=$1;}
+		| /*fixme*/
+		;
+
+ExpressionName
+		: Identifier	{$$=$1;}
+		;
+
+AssignmentOperator
+		: '='	{$$= '=';}
+		;
+
+/* Yihao Wu */
+Expression
+		: AssignmentExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+AssignmentExpression
+		: ConditionalExpression	{$$=$1;}
+		;
+
+ConditionalExpression
+		: ConditionalOrExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+ConditionalOrExpression
+		: ConditionalAndExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+ConditionalAndExpression
+		: InclusiveOrExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+InclusiveOrExpression
+		: ExclusiveOrExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+ExclusiveOrExpression
+		: AndExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+AndExpression
+		: EqualityExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+EqualityExpression
+		: RelationalExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+RelationalExpression
+		: ShiftExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+ShiftExpression
+		: AdditiveExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+AdditiveExpression
+		: MultiplicativeExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+MultiplicativeExpression
+		: UnaryExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+UnaryExpression
+		: UnaryExpressionNotPlusMinus	{$$=$1;}
+		| /*fixme*/
+		;
+
+UnaryExpressionNotPlusMinus
+		: PostfixExpression	{$$=$1;}
+		| /*fixme*/
+		;
+
+PostfixExpression
+		: Primary	{$$=$1;}
+		| /*fixme*/
+		;
+
+Primary
+		: PrimaryNoNewArray	{$$=$1;}
+		| /*fixme*/
+		;
+
+PrimaryNoNewArray
+		: Literal	{$$=$1;}
+		| /*fixme*/
+		;
+
+Literal
+		: IntegerLiteral	{$$=$1;}
+		| /*fixme*/
+		;
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+public Parser(Scanner scanner) : base(scanner)
+{
+}

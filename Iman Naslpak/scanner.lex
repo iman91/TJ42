@@ -32,12 +32,10 @@ native                       { return (int)Tokens.NATIVE; }
 strictfp                     { return (int)Tokens.STRICFFP; }
 class                        { return (int)Tokens.CLASS; }
 void						 { return (int)Tokens.VOID; }
-switch						 { return (int)Tokens.SWITCH; }
-case						 { return (int)Tokens.CASE; }
-default						 { return (int)Tokens.DEFAULT; }
 
 
-({DecimalNumeral}|{HexNumeral}|{OctalNumeral}|{BinaryNumeral})						{yylval.num = int.Parse(yytext); return (int)Tokens.IntegerLiteral;}
+
+({DecimalNumeral}|{HexNumeral}|{OctalNumeral}|{BinaryNumeral})						{ yylval.num = int.Parse(yytext); return (int)Tokens.IntergerLiteral;}
 
 true|false		{yylval.name = yytext; return (int)Tokens.BooleanLiteral;}
 \"{StringCharacter}*\"	{yylval.name = yytext; return (int)Tokens.StringLiteral; }

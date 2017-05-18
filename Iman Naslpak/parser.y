@@ -1,22 +1,68 @@
 ﻿%namespace GPLexTutorial
+%{
+public static AST.Node root;
+%}
 %union
 {
-	public AST.Type type;
     public int num;
     public string name;
+	public AST.CompilationUnit CU;
+	public List<AST.TypeDeclaration> TDs;
+	public AST.TypeDeclaration TD;
+	public AST.ClassDeclaration CD;
+	public List<AST.ClassModifier> classmodifiers;
+	public AST.ClassModifier classmodifier;
+	public List<AST.MethodDeclaration> MDs;
+	public AST.MethodDeclaration MD;
+	public List<AST.MethodModifier> methodmodifiers;
+	public AST.MethodModifier methodmodifier;
+	public AST.MethodHeader methodheader;
+	public List<AST.Statements> stms;
+	public AST.Statements stm;
+	public AST.MethodDeclarator methoddeclarator;
+	public AST.VoidType voidtype; 
+	public AST.FormalParameter formalparameter;
+	public AST.Type type;
+	public AST.VariableDeclaratorId VDID;
+	public AST.LocalVariableDeclaration LVD;
+	public AST.Expression exp;
+	public AST.ExpressionName ExN;
+	public AST.AssignmentOperator AO;
+
 }
-%type <type> UnannType IntegralType NumericType UnannPrimitiveType
-%token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID SWITCH CASE DEFAULT
-%token <name> StringLiteral BooleanLiteral Identifier 
-%token <num> IntegerLiteral
 
+%token INT SHORT BYTE LONG CHAR PUBLIC PROTECTED PRIVATE ABSTRACT STATIC FINAL SYNCHRONIZED NATIVE STRICFFP CLASS VOID
+%token <name> StringLiteral BooleanLiteral Identifier	
+%token <num> IntergerLiteral
 
+%type <CU> CompilationUnit
+%type <TDs> TypeDeclarations
+%type <TD> TypeDeclaration
+%type <CD> ClassDeclaration NormalClassDeclaration
+%type <classmodifiers> ClassModifiers
+%type <classmodifier> ClassModifier
+%type <MDs> ClassBody ClassBodyDeclarations	ClassBodyDeclaration	ClassMemberDeclaration MethodDeclarations
+%type <MD> MethodDeclaration
+%type <methodmodifiers> MethodModifiers
+%type <methodmodifier> MethodModifier
+%type <methodheader> MethodHeader
+%type <stms> MethodBody	Block	BlockStatements_opt	BlockStatements
+%type <stm> BlockStatement	LocalVariableDeclarationStatement	Statement	LocalVariableDeclaration	ExpressionStatement	StatementWithoutTrailingSubstatement
+%type <methoddeclarator> MethodDeclarator	
+%type <voidtype> Result
+%type <formalparameter>FormalParameterList_opt	FormalParameterList	LastFormalParameter FormalParameter
+%type <type> UnannType	UnannReferenceType	UnannArrayType	UnannTypeVariable	UnannPrimitiveType	NumericType	IntegralType
+%type <VDID> VariableDeclaratorId	VariableDeclaratorList	VariableDeclarators	VariableDeclarator
+%type <LVD>	LocalVariableDeclaration
+%type <exp>	StatementExpression	Assignment	LeftHandSide  Expression AssignmentExpression	 ConditionalExpression  ConditionalOrExpression   ConditionalAndExpression  InclusiveOrExpression ExclusiveOrExpression AndExpression EqualityExpression RelationalExpression ShiftExpression	 AdditiveExpression MultiplicativeExpression UnaryExpression UnaryExpressionNotPlusMinus PostFixExpression Primary PrimaryNoNewArray Literal
+%type <ExN> ExpressionName
+%type <AO> AssignmentOperator
 
 
 %%
 /* Shih-Kai Lu */
 CompilationUnit
-		: PackageDeclaration_opt ImportDeclarations TypeDeclarations
+		: PackageDeclaration_opt ImportDeclarations TypeDeclarations				{ root = new AST.CompilationUnit($3); }
 		;
 
 PackageDeclaration_opt
@@ -34,19 +80,20 @@ ImportDeclarations
 		;
 
 TypeDeclarations
-		:  /* empty */
-		| TypeDeclarations TypeDeclaration
+		: 
+		 TypeDeclarations TypeDeclaration   { $$ = $1; $$.Add($2); }
+		| /* empty */			{ $$ = new List<AST.TypeDeclaration>(); }
 		; 
 TypeDeclaration:
-	ClassDeclaration
-	| InterfaceDeclaration
+	ClassDeclaration				{ $$ = $1; }
+	| InterfaceDeclaration			
 	;
 
 InterfaceDeclaration:
 		/*fixme*/
 		;
 ClassDeclaration
-		: NormalClassDeclaration 
+		: NormalClassDeclaration		{ $$ = $1; }
 		| EnumDeclaration
 		;
 
@@ -55,19 +102,20 @@ EnumDeclaration:
 	;
 
 NormalClassDeclaration
-		: ClassModifiers CLASS Identifier TypeParameters_opt Superclass_opt Superinterfaces_opt ClassBody
+		: ClassModifiers CLASS Identifier TypeParameters_opt Superclass_opt Superinterfaces_opt ClassBody		{ $$= new AST.ClassDeclaration($1,$3,$7); }
 		;
 
 ClassModifiers
-		: /* empty */ 
-		| ClassModifier ClassModifiers
+		:
+		 ClassModifier ClassModifiers { $$ = $2; $$.Add($1); }
+		| /* empty */	{ $$ = new List<AST.ClassModifier>(); }
 		;
 ClassModifier:
-		PUBLIC 
+		PUBLIC			{$$= AST.ClassModifier.Public;}
 		|PROTECTED 
 		|PRIVATE 
 		|ABSTRACT 
-		|STATIC 
+		|STATIC			{$$= AST.ClassModifier.Static;}
 		|FINAL 
 		|SYNCHRONIZED 
 		|NATIVE 
@@ -89,46 +137,49 @@ Superinterfaces_opt
 		;
 
 ClassBody
-		: '{' ClassBodyDeclarations '}'
+		: '{' ClassBodyDeclarations '}'			{ $$ = $2; }
 		;
 
 ClassBodyDeclarations
-		: ClassBodyDeclaration
+		: ClassBodyDeclaration					{$$=$1;}
 		| /* empty */
 		;
 ClassBodyDeclaration:
-		ClassMemberDeclaration
+		ClassMemberDeclaration					{ $$=$1;}
 		| /* fixme */ 
 		;
 
 ClassMemberDeclaration
 		: 
-		 MethodDeclaration
+		 MethodDeclarations				{$$=$1;}
 		| /*fixme*/
 		;
-
+MethodDeclarations:
+		MethodDeclarations MethodDeclaration	{ $$ = $1; $$.Add($2); }
+		| /* empty */		{ $$ = new List<AST.MethodDeclaration>(); }
+		;
 
 		/* Ze Chen */
 MethodDeclaration
-		: MethodModifiers MethodHeader MethodBody
+		: MethodModifiers MethodHeader MethodBody	{$$ = new AST.MethodDeclaration($1,$2,$3);}
 		;
 MethodModifiers:
-	/* empty */
-	| MethodModifier	MethodModifiers
+	 MethodModifier	MethodModifiers		 { $$ = $2; $$.Add($1); }
+	|/* empty */	{ $$ = new List<AST.MethodModifier>(); }
 	;
 MethodModifier
-		: PUBLIC 
+		: PUBLIC			{$$= AST.MethodModifier.Public;}
 		|PROTECTED 
 		|PRIVATE 
 		|ABSTRACT 
-		|STATIC 
+		|STATIC				{$$= AST.MethodModifier.Static;}
 		|FINAL 
 		|SYNCHRONIZED 
 		|NATIVE 
 		|STRICFFP
 		;
 MethodHeader
-		: Result MethodDeclarator Throws_opt
+		: Result MethodDeclarator Throws_opt		{$$ = new AST.MethodHeader($1,$2);}
 		| /*fixme*/
 		;
 Throws_opt:
@@ -140,11 +191,11 @@ Throws:
 	;
 Result
 		: /*fixme*/ 
-		| VOID
+		| VOID		{$$ = new AST.VoidType();}
 		;
 
 MethodDeclarator
-		: Identifier '(' FormalParameterList_opt ')' Dims_opt
+		: Identifier '(' FormalParameterList_opt ')' Dims_opt	{$$ = new AST.MethodDeclarator($1,$3);}
 		;
 Dims_opt:
 		/* empty */
@@ -156,21 +207,21 @@ Dims:
 	;
 FormalParameterList_opt
 		: /* empty */
-		| FormalParameterList
+		| FormalParameterList	{$$=$1;}
 		;
 FormalParameterList:
-		LastFormalParameter
+		LastFormalParameter	{$$=$1;}
 		| /* fixme */
 		;
 
 		/* Hao Ge */
 LastFormalParameter
 		: /*fixme*/ 
-		| FormalParameter
+		| FormalParameter	{$$=$1;}
 		;
 
 FormalParameter
-		: VariableModifiers UnannType VariableDeclaratorId
+		: VariableModifiers UnannType VariableDeclaratorId	{$$ = new AST.FormalParameter($2,$3);}
 		;
 
 VariableModifiers
@@ -182,90 +233,90 @@ VariableModifier:
 	;
 UnannType
 		: /*fixme*/
-		| UnannReferenceType
+		| UnannReferenceType	{$$ = $1;}
 		;
 
 UnannReferenceType
 		: /*fixme*/
 		| /*fixme*/
-		| UnannArrayType
+		| UnannArrayType	{$$ = $1;}
 		;
 
 UnannArrayType
 		: /*fixme*/
 		| /*fixme*/
-		| UnannTypeVariable Dims
+		| UnannTypeVariable Dims	{$$ = $1;}
 		;
 
 UnannTypeVariable
-		: Identifier
+		: Identifier	{$$ = new AST.ArrayType($1);}
 		;
 
 
 VariableDeclaratorId
-		: Identifier Dims_opt
+		: Identifier Dims_opt	{$$= new AST.VariableDeclaratorId($1);}
 		;
 
 /* Mir Iman Naslpak */
 MethodBody:
-	Block					{$$=$1;}
+	Block {$$=$1;}
 	;
 Block:
-	'{' BlockStatements_opt '}'						{$$=$1;}
+	'{' BlockStatements_opt '}'	{$$=$2;}
 	| /* empty */
 	;
 BlockStatements_opt:
-	BlockStatements							{$$=$1;}
+	BlockStatements	{$$=$1;}
 	| /* empty */
 	;
 BlockStatements:
-	BlockStatement						{$$=$1;}
-	|BlockStatements  BlockStatement	{$$ = $1; $$.Add($2); }
+	 BlockStatements BlockStatement	{$$ = $1; $$.Add($2); }
+	|	{ $$ = new List<AST.Statements>(); }
 	;
 BlockStatement:
-	LocalVariableDeclarationStatement	{$$=$1;}
-	| Statement							{$$=$1;}
+	LocalVariableDeclarationStatement {$$ = $1;}
+	| Statement			{$$ = $1;}
 	| /* fixme */
 	;
 
 LocalVariableDeclarationStatement:
-	LocalVariableDeclaration ';'	{$$=$1;}
+	LocalVariableDeclaration ';'		{$$ = $1;}
 	;
 LocalVariableDeclaration:
-	VariableModifiers UnannType VariableDeclaratorList			{$$ = new AST.LocalVariableDeclaration($2,$3);}
+	VariableModifiers UnannType VariableDeclaratorList	{$$ = new AST.LocalVariableDeclaration($2,$3);}
 	;
 VariableModifiers:
 	/* empty */
 	| /* fixme */
 	;
 UnannType:
-	UnannPrimitiveType				{$$=$1;}
-	| /* fixme */
+	UnannPrimitiveType	{$$ = $1;}
+	| /* fixme */	
 	;
 UnannPrimitiveType:
-	NumericType				{$$=$1;}
+	NumericType		{$$ = $1;}
 	| /* fixme */
 	;
 NumericType:
-	IntegralType			{$$=$1;}
+	IntegralType		{$$ = $1;}
 	| /* fixme */
 	;
 IntegralType:
 	 BYTE
 	| SHORT
-	| INT					{$$=AST.IntType();}
+	| INT			{$$ = new AST.IntType();}
 	| LONG
 	| CHAR
 	;
 VariableDeclaratorList:
-	VariableDeclarators			{$$=$1;}
+	VariableDeclarators	{$$=$1;}
 	;
 VariableDeclarators:
-	VariableDeclarator									{$$=$1;}
-	| VariableDeclarator ',' VariableDeclarators		
+	VariableDeclarator	{$$=$1;}
+	| VariableDeclarator ',' VariableDeclarators
 	;
 VariableDeclarator:
-	VariableDeclaratorId equal_opt	{$$=$1;}
+	VariableDeclaratorId equal_opt	{$$=$1;}	
 	;
 equal_opt:
 	'=' VariableInitializer
@@ -277,178 +328,141 @@ VariableInitializer:
 
 	/* Benliang Shi */
 Statement:
-	StatementWithoutTrailingSubstatement
+	StatementWithoutTrailingSubstatement {$$=$1;}
 	| /* fixme */
 	;
 
 StatementWithoutTrailingSubstatement:
-	 ExpressionStatement
-	| SwitchStatement
+	ExpressionStatement		{$$=$1;}
 	| /* fixme */
 	;
 
 ExpressionStatement:
-	StatementExpression ';'
+	StatementExpression ';'	{$$ = new AST.ExpressionStatement($1);}
 	;
 
 StatementExpression:
-	Assignment
+	Assignment	{$$=$1;}
 	| /* fixme */
 	;
 
 Assignment:
-	LeftHandSide AssignmentOperator Expression
+	LeftHandSide AssignmentOperator Expression	{$$ = new AST.AssignmentExpression($1,$2,$3);}
 	| /* fixme */
 	;
 
 LeftHandSide:
-	ExpressionName
+	ExpressionName		{$$ = $1;}
 	| /* fixme */
 	;
 
 ExpressionName:
-	Identifier
+	Identifier		{$$ = new AST.ExpressionName($1);}
 	| /* fixme */
 	;
 
 AssignmentOperator:
-	'='
+	'='					{$$ = new AST.AssignmentOperator("equal");}
 	| /* fixme */
 	;
 
 	/* Yihao Wu */
 Expression
-		: AssignmentExpression
+		: AssignmentExpression			{$$=$1;}
                 | /*fixme*/
 		;
 
 AssignmentExpression
-		: ConditionalExpression
+		: ConditionalExpression			{$$=$1;}
 		| /*fixme*/
 		;
 
 ConditionalExpression
-		: ConditionalOrExpression
+		: ConditionalOrExpression		{$$=$1;}
 		| /*fixme*/
 		;
 
 ConditionalOrExpression
-		: ConditionalAndExpression
+		: ConditionalAndExpression		{$$=$1;}
 		| /*fixme*/
 		; 
 		
 ConditionalAndExpression
-		: InclusiveOrExpression
+		: InclusiveOrExpression		{$$=$1;}
 		| /*fixme*/
 		;
 
 InclusiveOrExpression
-		: ExclusiveOrExpression
+		: ExclusiveOrExpression		{$$=$1;}
 		| /*fixme*/
 		;
 
 ExclusiveOrExpression
-		: AndExpression
+		: AndExpression			{$$=$1;}
 		| /*fixme*/
 		;
 AndExpression
-		: EqualityExpression
+		: EqualityExpression		{$$=$1;}
 		| /*fixme*/
 		;
 
 EqualityExpression
-		: RelationalExpression
+		: RelationalExpression		{$$=$1;}
 		| /*fixme*/
 		;
 
 		/* sumair singh */
 RelationalExpression: 
-                ShiftExpression
+                ShiftExpression		{$$=$1;}
 				 | /* fixme */
 				 ;
 
 ShiftExpression:
-              AdditiveExpression
+              AdditiveExpression		{$$=$1;}
 			   | /* fixme */
 			   ;
 
 AdditiveExpression:
-                 MultiplicativeExpression
+                 MultiplicativeExpression		{$$=$1;}
 				  | /* fixme */
 				  ;
 
 MultiplicativeExpression:
-                 UnaryExpression
+                 UnaryExpression		{$$=$1;}
 				  | /* fixme */
 				  ;
 
 UnaryExpression:
-                UnaryExpressionNotPlusMinus
+                UnaryExpressionNotPlusMinus		{$$=$1;}
 				 | /* fixme */
 				 ;
 
 UnaryExpressionNotPlusMinus:
-                 PostFixExpression
+                 PostFixExpression		{$$=$1;}
 				  | /* fixme */
 				  ;
 
 PostFixExpression:
-                Primary
+                Primary			{$$=$1;}
 				 | /* fixme */
 				 ;
 
 Primary:
-       PrimaryNoNewArray
+       PrimaryNoNewArray		{$$=$1;}
 		| /* fixme */
 		;
 
 PrimaryNoNewArray:
-               Literal
+               Literal		{$$=$1;}
 				| /* fixme */
 				;
 
 Literal:
-       IntegerLiteral
+       IntergerLiteral		{$$ = new AST.PrimaryExpression($1);}
 		| /* fixme */
 		;
 
-
-		/*  Iman - switch - start */
-SwitchStatement:
-	SWITCH '(' Expression ')' SwitchBlock
-	;
-SwitchBlock:
-	'{' SwitchBlockStatementGroups SwitchLabels_opt '}' 
-	;
-SwitchBlockStatementGroups:
-	/* empty */
-	| SwitchBlockStatementGroup SwitchBlockStatementGroups
-	;
-SwitchLabels_opt:
-	/* empty */
-	| SwitchLabels
-	;
-SwitchBlockStatementGroup:
-	SwitchLabels BlockStatements
-	;
-SwitchLabels:
-	SwitchLabel
-	| SwitchLabel SwitchLabels
-	;
-SwitchLabel:
-	CASE ConstantExpression ':'
-	| CASE EnumConstantName ':'
-	| DEFAULT ':'
-	;
-ConstantExpression:
-	Expression
-	;
-EnumConstantName:
-	Identifier
-	;
-	/* Iman - switch - end */
 %%
-
 public Parser(Scanner scanner) : base(scanner)
 {
 }

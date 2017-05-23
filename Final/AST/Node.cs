@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using System.IO;
 
 namespace GPLexTutorial.AST
 {
     public abstract class Node
     {
         public abstract void TypeCheck();
-        public abstract bool ResolveNames();
+        public abstract bool ResolveNames(LexicalScope scope);
+        public abstract void GenCode(StreamWriter testfile);
         void Indent(int n)
         {
             for (int i = 0; i < n; i++)

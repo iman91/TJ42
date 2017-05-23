@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using System.IO;
 
 namespace GPLexTutorial.AST
 {
@@ -22,7 +23,7 @@ namespace GPLexTutorial.AST
     {
         private string ElementType;
         public ArrayType(string ElementType) { this.ElementType = ElementType; }
-        public override bool ResolveNames()
+        public override bool ResolveNames(LexicalScope scope)
         {
             return true;
         }
@@ -34,12 +35,17 @@ namespace GPLexTutorial.AST
         {
             return true;
         }
+        public override void GenCode(StreamWriter testfile)
+        {
+            testfile.Write(ElementType);
+            testfile.Write("[]");
+        }
     }
     public class NamedType : Type
     {
         private string TypeName;
         public NamedType(string TypeName) { this.TypeName = TypeName; }
-        public override bool ResolveNames()
+        public override bool ResolveNames(LexicalScope scope)
         {
             return true;
         }
@@ -50,6 +56,11 @@ namespace GPLexTutorial.AST
         public override bool Equal(Type other)
         {
             return true;
+        }
+        public override void GenCode(StreamWriter testfile)
+        {
+            testfile.Write("TypeName");
+
         }
     }
     public class VoidType : Type
@@ -58,7 +69,7 @@ namespace GPLexTutorial.AST
         {
 
         }
-        public override bool ResolveNames()
+        public override bool ResolveNames(LexicalScope scope)
         {
             return true;
         }
@@ -69,6 +80,10 @@ namespace GPLexTutorial.AST
         public override bool Equal(Type other)
         {
             return true;
+        }
+        public override void GenCode(StreamWriter testfile)
+        {
+            testfile.Write(" void");
         }
 
 
@@ -76,7 +91,7 @@ namespace GPLexTutorial.AST
     public class IntType : Type
     {
       
-        public override bool ResolveNames()
+        public override bool ResolveNames(LexicalScope scope)
         {
             return true;
         }
@@ -87,6 +102,11 @@ namespace GPLexTutorial.AST
         public override bool Equal(Type other)
         {
             return true;
+        }
+        public override void GenCode(StreamWriter testfile)
+        {
+            testfile.Write("int32");
+            
         }
     }
 

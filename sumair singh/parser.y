@@ -1,4 +1,5 @@
-﻿%namespace GPLexTutorial
+/*Sumair singh*/
+%namespace GPLexTutorial
 %union
 {
     public int num;
